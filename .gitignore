@@ -15,6 +15,6 @@ bin
 
 /doc
 *.xml
-.idea/.name
 lib/junit-4.7.jar
 *.jar
+.idea/
