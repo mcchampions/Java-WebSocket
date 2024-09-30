@@ -11,55 +11,24 @@
     <url>https://github.com/TooTallNate/Java-WebSocket</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>2.0.13</slf4j.version>
 
-        <!-- Test dependencies versions -->
-        <junit.version>4.13.1</junit.version>
-
-        <!-- Maven plugin versions -->
-        <bnd.maven.plugin.version>6.4.0</bnd.maven.plugin.version>
-        <maven.checkstyle.plugin.version>3.1.1</maven.checkstyle.plugin.version>
-        <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-        <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-        <maven.shade.plugin.version>3.4.1</maven.shade.plugin.version>
-        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
-        <nexus.staging.maven.plugin.version>1.6.13</nexus.staging.maven.plugin.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
         <sonar.projectKey>org.java-websocket:Java-WebSocket</sonar.projectKey>
         <sonar.organization>marci4-github</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://github.com/TooTallNate/Java-WebSocket/blob/master/LICENSE</url>
-        </license>
-    </licenses>
-    <scm>
-        <url>https://github.com/TooTallNate/Java-WebSocket</url>
-    </scm>
-    <issueManagement>
-        <url>https://github.com/TooTallNate/Java-WebSocket/issues</url>
-        <system>GitHub Issues</system>
-    </issueManagement>
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
+                <version>2.0.16</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <version>2.0.16</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -71,62 +40,20 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>default-compile</id>
-                            <goals>
-                                <goal>compile</goal>
-                            </goals>
-                            <configuration>
-                                <release>7</release>
-                            </configuration>
-                        </execution>
-
-                        <execution>
-                            <id>module-compile</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>compile</goal>
-                            </goals>
-                            <configuration>
-                                <release>9</release>
-                                <compileSourceRoots>
-                                    <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
-                                </compileSourceRoots>
-                                <multiReleaseOutput>true</multiReleaseOutput>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${maven.gpg.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven.jar.plugin.version}</version>
+                    <version>3.13.0</version>
                     <configuration>
-                        <archive>
-                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        </archive>
+                        <release>17</release>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>${maven.shade.plugin.version}</version>
+                    <version>3.6.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -143,31 +70,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-    <developers>
-        <developer>
-            <id>TooTallNate</id>
-            <name>Nathan Rajlich</name>
-            <url>https://github.com/TooTallNate</url>
-            <email>nathan@tootallnate.net</email>
-        </developer>
-        <developer>
-            <id>marci4</id>
-            <name>Marcel Prestel</name>
-            <url>https://github.com/marci4</url>
-            <email>admin@marci4.de</email>
-        </developer>
-    </developers>
 </project>
 
 
