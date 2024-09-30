@@ -32,9 +32,9 @@ import java.io.Serial;
  */
 public class WebsocketNotConnectedException extends RuntimeException {
 
-  /**
-   * Serializable
-   */
-  @Serial
-  private static final long serialVersionUID = -785314021592982715L;
+    /**
+     * Serializable
+     */
+    @Serial
+    private static final long serialVersionUID = -785314021592982715L;
 }
