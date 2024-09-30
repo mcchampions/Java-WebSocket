@@ -180,13 +180,10 @@ public class SSLSocketChannel implements WrappedByteChannel, ByteChannel, ISSLCh
           throw e;
         }
         switch (result.getStatus()) {
-          case OK:
+          case OK, BUFFER_UNDERFLOW:
             peerAppData.flip();
             return ByteBufferUtils.transferByteBuffer(peerAppData, dst);
-          case BUFFER_UNDERFLOW:
-            peerAppData.flip();
-            return ByteBufferUtils.transferByteBuffer(peerAppData, dst);
-          case BUFFER_OVERFLOW:
+            case BUFFER_OVERFLOW:
             peerAppData = enlargeApplicationBuffer(peerAppData);
             return read(dst);
           case CLOSED:
@@ -502,7 +499,7 @@ public class SSLSocketChannel implements WrappedByteChannel, ByteChannel, ISSLCh
   }
 
   @Override
-  public void writeMore() throws IOException {
+  public void writeMore() {
     //Nothing to do since we write out all the data in a while loop
   }
 

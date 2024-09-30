@@ -111,7 +111,7 @@ public abstract class Draft {
       handshake = translateHandshakeHttpServer(firstLineTokens, line);
     }
     line = readStringLine(buf);
-    while (line != null && line.length() > 0) {
+    while (line != null && !line.isEmpty()) {
       String[] pair = line.split(":", 2);
       if (pair.length != 2) {
         throw new InvalidHandshakeException("not an http header");
@@ -172,18 +172,18 @@ public abstract class Draft {
       throw new InvalidHandshakeException(String
           .format("Invalid status line received: %s Status line: %s", firstLineTokens[0], line));
     }
-    HandshakeBuilder handshake = new HandshakeImpl1Server();
-    ServerHandshakeBuilder serverhandshake = (ServerHandshakeBuilder) handshake;
+    ServerHandshakeBuilder handshake = new HandshakeImpl1Server();
+    ServerHandshakeBuilder serverhandshake = handshake;
     serverhandshake.setHttpStatus(Short.parseShort(firstLineTokens[1]));
     serverhandshake.setHttpStatusMessage(firstLineTokens[2]);
     return handshake;
   }
 
   public abstract HandshakeState acceptHandshakeAsClient(ClientHandshake request,
-      ServerHandshake response) throws InvalidHandshakeException;
+      ServerHandshake response);
 
   public abstract HandshakeState acceptHandshakeAsServer(ClientHandshake handshakedata)
-      throws InvalidHandshakeException;
+          ;
 
   protected boolean basicAccept(Handshakedata handshakedata) {
     return handshakedata.getFieldValue("Upgrade").equalsIgnoreCase("websocket") && handshakedata
@@ -235,7 +235,7 @@ public abstract class Draft {
     } else {
       continuousFrameType = op;
     }
-    return Collections.singletonList((Framedata) bui);
+    return Collections.singletonList(bui);
   }
 
   public abstract void reset();
@@ -296,7 +296,7 @@ public abstract class Draft {
   }
 
   public abstract ClientHandshakeBuilder postProcessHandshakeRequestAsClient(
-      ClientHandshakeBuilder request) throws InvalidHandshakeException;
+      ClientHandshakeBuilder request);
 
   public abstract HandshakeBuilder postProcessHandshakeResponseAsServer(ClientHandshake request,
       ServerHandshakeBuilder response) throws InvalidHandshakeException;
@@ -328,7 +328,7 @@ public abstract class Draft {
 
   int readVersion(Handshakedata handshakedata) {
     String vers = handshakedata.getFieldValue("Sec-WebSocket-Version");
-    if (vers.length() > 0) {
+    if (!vers.isEmpty()) {
       int v;
       try {
         v = Integer.parseInt(vers.trim());

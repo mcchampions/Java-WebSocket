@@ -175,7 +175,7 @@ public class Draft_6455 extends Draft {
    * @since 1.3.5
    */
   public Draft_6455() {
-    this(Collections.<IExtension>emptyList());
+    this(Collections.emptyList());
   }
 
   /**
@@ -195,7 +195,7 @@ public class Draft_6455 extends Draft {
    * @since 1.3.5
    */
   public Draft_6455(List<IExtension> inputExtensions) {
-    this(inputExtensions, Collections.<IProtocol>singletonList(new Protocol("")));
+    this(inputExtensions, Collections.singletonList(new Protocol("")));
   }
 
   /**
@@ -220,7 +220,7 @@ public class Draft_6455 extends Draft {
    * @since 1.4.0
    */
   public Draft_6455(List<IExtension> inputExtensions, int inputMaxFrameSize) {
-    this(inputExtensions, Collections.<IProtocol>singletonList(new Protocol("")),
+    this(inputExtensions, Collections.singletonList(new Protocol("")),
         inputMaxFrameSize);
   }
 
@@ -244,9 +244,10 @@ public class Draft_6455 extends Draft {
     boolean hasDefault = false;
     byteBufferList = new ArrayList<>();
     for (IExtension inputExtension : inputExtensions) {
-      if (inputExtension.getClass().equals(DefaultExtension.class)) {
-        hasDefault = true;
-      }
+        if (inputExtension.getClass().equals(DefaultExtension.class)) {
+            hasDefault = true;
+            break;
+        }
     }
     knownExtensions.addAll(inputExtensions);
     //We always add the DefaultExtension to implement the normal RFC 6455 specification
@@ -259,8 +260,7 @@ public class Draft_6455 extends Draft {
   }
 
   @Override
-  public HandshakeState acceptHandshakeAsServer(ClientHandshake handshakedata)
-      throws InvalidHandshakeException {
+  public HandshakeState acceptHandshakeAsServer(ClientHandshake handshakedata) {
     int v = readVersion(handshakedata);
     if (v != 13) {
       log.trace("acceptHandshakeAsServer - Wrong websocket version.");
@@ -303,8 +303,7 @@ public class Draft_6455 extends Draft {
   }
 
   @Override
-  public HandshakeState acceptHandshakeAsClient(ClientHandshake request, ServerHandshake response)
-      throws InvalidHandshakeException {
+  public HandshakeState acceptHandshakeAsClient(ClientHandshake request, ServerHandshake response) {
     if (!basicAccept(response)) {
       log.trace("acceptHandshakeAsClient - Missing/wrong upgrade or connection in handshake.");
       return HandshakeState.NOT_MATCHED;
@@ -403,26 +402,26 @@ public class Draft_6455 extends Draft {
     StringBuilder requestedExtensions = new StringBuilder();
     for (IExtension knownExtension : knownExtensions) {
       if (knownExtension.getProvidedExtensionAsClient() != null
-          && knownExtension.getProvidedExtensionAsClient().length() != 0) {
-        if (requestedExtensions.length() > 0) {
+          && !knownExtension.getProvidedExtensionAsClient().isEmpty()) {
+        if (!requestedExtensions.isEmpty()) {
           requestedExtensions.append(", ");
         }
         requestedExtensions.append(knownExtension.getProvidedExtensionAsClient());
       }
     }
-    if (requestedExtensions.length() != 0) {
+    if (!requestedExtensions.isEmpty()) {
       request.put(SEC_WEB_SOCKET_EXTENSIONS, requestedExtensions.toString());
     }
     StringBuilder requestedProtocols = new StringBuilder();
     for (IProtocol knownProtocol : knownProtocols) {
-      if (knownProtocol.getProvidedProtocol().length() != 0) {
-        if (requestedProtocols.length() > 0) {
+      if (!knownProtocol.getProvidedProtocol().isEmpty()) {
+        if (!requestedProtocols.isEmpty()) {
           requestedProtocols.append(", ");
         }
         requestedProtocols.append(knownProtocol.getProvidedProtocol());
       }
     }
-    if (requestedProtocols.length() != 0) {
+    if (!requestedProtocols.isEmpty()) {
       request.put(SEC_WEB_SOCKET_PROTOCOL, requestedProtocols.toString());
     }
     return request;
@@ -435,14 +434,14 @@ public class Draft_6455 extends Draft {
     response.put(CONNECTION,
         request.getFieldValue(CONNECTION)); // to respond to a Connection keep alives
     String seckey = request.getFieldValue(SEC_WEB_SOCKET_KEY);
-    if (seckey == null || "".equals(seckey)) {
+    if (seckey == null || seckey.isEmpty()) {
       throw new InvalidHandshakeException("missing Sec-WebSocket-Key");
     }
     response.put(SEC_WEB_SOCKET_ACCEPT, generateFinalKey(seckey));
-    if (getExtension().getProvidedExtensionAsServer().length() != 0) {
+    if (!getExtension().getProvidedExtensionAsServer().isEmpty()) {
       response.put(SEC_WEB_SOCKET_EXTENSIONS, getExtension().getProvidedExtensionAsServer());
     }
-    if (getProtocol() != null && getProtocol().getProvidedProtocol().length() != 0) {
+    if (getProtocol() != null && !getProtocol().getProvidedProtocol().isEmpty()) {
       response.put(SEC_WEB_SOCKET_PROTOCOL, getProtocol().getProvidedProtocol());
     }
     response.setHttpStatusMessage("Web Socket Protocol Handshake");
@@ -683,16 +682,15 @@ public class Draft_6455 extends Draft {
    * @return byte that represents which RSV bit is set.
    */
   private byte getRSVByte(int rsv) {
-    switch (rsv) {
-      case 1 : // 0100 0000
-        return 0x40;
-      case 2 : // 0010 0000
-        return 0x20;
-      case 3 : // 0001 0000
-        return 0x10;
-      default:
-        return 0;
-    }
+      return switch (rsv) {
+          case 1 -> // 0100 0000
+                  0x40;
+          case 2 -> // 0010 0000
+                  0x20;
+          case 3 -> // 0001 0000
+                  0x10;
+          default -> 0;
+      };
   }
 
   /**
@@ -741,7 +739,7 @@ public class Draft_6455 extends Draft {
           }
           incompleteframe.put(buffer.array(), buffer.position(), expectedNextByteCount);
           buffer.position(buffer.position() + expectedNextByteCount);
-          cur = translateSingleFrame((ByteBuffer) incompleteframe.duplicate().position(0));
+          cur = translateSingleFrame(incompleteframe.duplicate().position(0));
           frames.add(cur);
           incompleteframe = null;
         } catch (IncompleteException e) {
@@ -784,7 +782,7 @@ public class Draft_6455 extends Draft {
     } catch (InvalidDataException e) {
       throw new NotSendableException(e);
     }
-    return Collections.singletonList((Framedata) curframe);
+    return Collections.singletonList(curframe);
   }
 
   @Override
@@ -797,7 +795,7 @@ public class Draft_6455 extends Draft {
     } catch (InvalidDataException e) {
       throw new NotSendableException(e);
     }
-    return Collections.singletonList((Framedata) curframe);
+    return Collections.singletonList(curframe);
   }
 
   @Override
@@ -869,24 +867,17 @@ public class Draft_6455 extends Draft {
   }
 
   private Opcode toOpcode(byte opcode) throws InvalidFrameException {
-    switch (opcode) {
-      case 0:
-        return Opcode.CONTINUOUS;
-      case 1:
-        return Opcode.TEXT;
-      case 2:
-        return Opcode.BINARY;
-      // 3-7 are not yet defined
-      case 8:
-        return Opcode.CLOSING;
-      case 9:
-        return Opcode.PING;
-      case 10:
-        return Opcode.PONG;
-      // 11-15 are not yet defined
-      default:
-        throw new InvalidFrameException("Unknown opcode " + (short) opcode);
-    }
+      return switch (opcode) {
+          case 0 -> Opcode.CONTINUOUS;
+          case 1 -> Opcode.TEXT;
+          case 2 -> Opcode.BINARY;
+          // 3-7 are not yet defined
+          case 8 -> Opcode.CLOSING;
+          case 9 -> Opcode.PING;
+          case 10 -> Opcode.PONG;
+          // 11-15 are not yet defined
+          default -> throw new InvalidFrameException("Unknown opcode " + (short) opcode);
+      };
   }
 
   @Override
@@ -1054,9 +1045,8 @@ public class Draft_6455 extends Draft {
   private void processFrameClosing(WebSocketImpl webSocketImpl, Framedata frame) {
     int code = CloseFrame.NOCODE;
     String reason = "";
-    if (frame instanceof CloseFrame) {
-      CloseFrame cf = (CloseFrame) frame;
-      code = cf.getCloseCode();
+    if (frame instanceof CloseFrame cf) {
+        code = cf.getCloseCode();
       reason = cf.getMessage();
     }
     if (webSocketImpl.getReadyState() == ReadyState.CLOSING) {
@@ -1192,7 +1182,7 @@ public class Draft_6455 extends Draft {
     return totalSize;
   }
 
-  private class TranslatedPayloadMetaData {
+  private static class TranslatedPayloadMetaData {
 
     private int payloadLength;
     private int realPackageSize;

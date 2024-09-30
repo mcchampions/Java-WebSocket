@@ -34,7 +34,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -217,12 +216,7 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     }
     this.uri = serverUri;
     this.draft = protocolDraft;
-    this.dnsResolver = new DnsResolver() {
-      @Override
-      public InetAddress resolve(URI uri) throws UnknownHostException {
-        return InetAddress.getByName(uri.getHost());
-      }
-    };
+    this.dnsResolver = uri -> InetAddress.getByName(uri.getHost());
     if (httpHeaders != null) {
       headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
       headers.putAll(httpHeaders);
@@ -466,7 +460,7 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
 
   @Override
   protected Collection<WebSocket> getConnections() {
-    return Collections.singletonList((WebSocket) engine);
+    return Collections.singletonList(engine);
   }
 
   @Override
@@ -496,9 +490,8 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
         upgradeSocketToSSL();
       }
 
-      if (socket instanceof SSLSocket) {
-        SSLSocket sslSocket = (SSLSocket) socket;
-        SSLParameters sslParameters = sslSocket.getSSLParameters();
+      if (socket instanceof SSLSocket sslSocket) {
+          SSLParameters sslParameters = sslSocket.getSSLParameters();
         onSetSSLParameters(sslParameters);
         sslSocket.setSSLParameters(sslParameters);
       }
@@ -514,9 +507,8 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     } catch (InternalError e) {
       // https://bugs.openjdk.java.net/browse/JDK-8173620
       if (e.getCause() instanceof InvocationTargetException && e.getCause()
-          .getCause() instanceof IOException) {
-        IOException cause = (IOException) e.getCause().getCause();
-        onWebsocketError(engine, cause);
+              .getCause() instanceof IOException cause) {
+          onWebsocketError(engine, cause);
         engine.closeConnection(CloseFrame.NEVER_CONNECTED, cause.getMessage());
         return;
       }
@@ -554,7 +546,7 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
   }
 
   private void upgradeSocketToSSL()
-      throws NoSuchAlgorithmException, KeyManagementException, IOException {
+      throws IOException {
     SSLSocketFactory factory;
     // Prioritise the provided socketfactory
     // Helps when using web debuggers like Fiddler Classic
@@ -621,7 +613,7 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     String path;
     String part1 = uri.getRawPath();
     String part2 = uri.getRawQuery();
-    if (part1 == null || part1.length() == 0) {
+    if (part1 == null || part1.isEmpty()) {
       path = "/";
     } else {
       path = part1;

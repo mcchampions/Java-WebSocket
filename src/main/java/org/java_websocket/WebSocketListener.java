@@ -54,10 +54,9 @@ public interface WebSocketListener {
    * @param request The opening http message send by the client. Can be used to access additional
    *                fields like cookies.
    * @return Returns an incomplete handshake containing all optional fields
-   * @throws InvalidDataException Throwing this exception will cause this handshake to be rejected
    */
   ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft,
-      ClientHandshake request) throws InvalidDataException;
+      ClientHandshake request);
 
   /**
    * Called on the client side when the socket connection is first established, and the
@@ -66,11 +65,9 @@ public interface WebSocketListener {
    * @param conn     The WebSocket related to this event
    * @param request  The handshake initially send out to the server by this websocket.
    * @param response The handshake the server sent in response to the request.
-   * @throws InvalidDataException Allows the client to reject the connection with the server in
-   *                              respect of its handshake response.
    */
   void onWebsocketHandshakeReceivedAsClient(WebSocket conn, ClientHandshake request,
-      ServerHandshake response) throws InvalidDataException;
+      ServerHandshake response);
 
   /**
    * Called on the client side when the socket connection is first established, and the
@@ -78,10 +75,9 @@ public interface WebSocketListener {
    *
    * @param conn    The WebSocket related to this event
    * @param request The handshake sent to the server by this websocket
-   * @throws InvalidDataException Allows the client to stop the connection from progressing
    */
   void onWebsocketHandshakeSentAsClient(WebSocket conn, ClientHandshake request)
-      throws InvalidDataException;
+  ;
 
   /**
    * Called when an entire text frame has been received. Do whatever you want here...

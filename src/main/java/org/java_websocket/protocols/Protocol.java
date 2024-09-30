@@ -56,7 +56,7 @@ public class Protocol implements IProtocol {
 
   @Override
   public boolean acceptProvidedProtocol(String inputProtocolHeader) {
-    if ("".equals(providedProtocol)) {
+    if (providedProtocol.isEmpty()) {
       return true;
     }
     String protocolHeader = patternSpace.matcher(inputProtocolHeader).replaceAll("");

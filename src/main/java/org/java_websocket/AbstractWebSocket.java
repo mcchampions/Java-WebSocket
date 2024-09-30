@@ -207,7 +207,7 @@ public abstract class AbstractWebSocket extends WebSocketAdapter {
       /**
        * Keep the connections in a separate list to not cause deadlocks
        */
-      private ArrayList<WebSocket> connections = new ArrayList<>();
+      private final ArrayList<WebSocket> connections = new ArrayList<>();
 
       @Override
       public void run() {
@@ -242,11 +242,10 @@ public abstract class AbstractWebSocket extends WebSocketAdapter {
    *                        consider the connection to be lost
    */
   private void executeConnectionLostDetection(WebSocket webSocket, long minimumPongTime) {
-    if (!(webSocket instanceof WebSocketImpl)) {
+    if (!(webSocket instanceof WebSocketImpl webSocketImpl)) {
       return;
     }
-    WebSocketImpl webSocketImpl = (WebSocketImpl) webSocket;
-    if (webSocketImpl.getLastPong() < minimumPongTime) {
+      if (webSocketImpl.getLastPong() < minimumPongTime) {
       log.trace("Closing connection due to no pong received: {}", webSocketImpl);
       webSocketImpl.closeConnection(CloseFrame.ABNORMAL_CLOSE,
           "The connection was closed because the other endpoint did not respond with a pong in time. For more information check: https://github.com/TooTallNate/Java-WebSocket/wiki/Lost-connection-detection");

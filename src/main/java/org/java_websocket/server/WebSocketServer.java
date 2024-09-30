@@ -38,16 +38,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -107,7 +98,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
   /**
    * The Draft of the WebSocket protocol the Server is adhering to.
    */
-  private List<Draft> drafts;
+  private final List<Draft> drafts;
 
   private Thread selectorthread;
 
@@ -115,7 +106,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 
   protected List<WebSocketWorker> decoders;
 
-  private List<WebSocketImpl> iqueue;
+  private final List<WebSocketImpl> iqueue;
   private BlockingQueue<ByteBuffer> buffers;
   private int queueinvokes = 0;
   private final AtomicInteger queuesize = new AtomicInteger(0);
@@ -149,12 +140,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     this(address, AVAILABLE_PROCESSORS, null);
   }
 
-  /**
-   * @param address      The address (host:port) this server should listen on.
-   * @param decodercount The number of {@link WebSocketWorker}s that will be used to process the
-   *                     incoming network data. By default this will be <code>Runtime.getRuntime().availableProcessors()</code>
-   * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
-   */
   public WebSocketServer(InetSocketAddress address, int decodercount) {
     this(address, decodercount, null);
   }
@@ -169,16 +154,8 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     this(address, AVAILABLE_PROCESSORS, drafts);
   }
 
-  /**
-   * @param address      The address (host:port) this server should listen on.
-   * @param decodercount The number of {@link WebSocketWorker}s that will be used to process the
-   *                     incoming network data. By default this will be <code>Runtime.getRuntime().availableProcessors()</code>
-   * @param drafts       The versions of the WebSocket protocol that this server instance should
-   *                     comply to. Clients that use an other protocol version will be rejected.
-   * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
-   */
   public WebSocketServer(InetSocketAddress address, int decodercount, List<Draft> drafts) {
-    this(address, decodercount, drafts, new HashSet<WebSocket>());
+    this(address, decodercount, drafts, new HashSet<>());
   }
 
   /**
@@ -211,11 +188,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
           "address and connectionscontainer must not be null and you need at least 1 decoder");
     }
 
-    if (drafts == null) {
-      this.drafts = Collections.emptyList();
-    } else {
-      this.drafts = drafts;
-    }
+    this.drafts = Objects.requireNonNullElse(drafts, Collections.emptyList());
 
     this.address = address;
     this.connections = connectionscontainer;
@@ -652,7 +625,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     buffers.put(createBuffer());
   }
 
-  protected void releaseBuffers(WebSocket c) throws InterruptedException {
+  protected void releaseBuffers(WebSocket c) {
     // queuesize.decrementAndGet();
     // takeBuffer();
   }
@@ -753,11 +726,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         onClose(conn, code, reason, remote);
       }
     } finally {
-      try {
-        releaseBuffers(conn);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
+      releaseBuffers(conn);
     }
 
   }
@@ -1082,12 +1051,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     public WebSocketWorker() {
       iqueue = new LinkedBlockingQueue<>();
       setName("WebSocketWorker-" + getId());
-      setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-          log.error("Uncaught exception in thread {}: {}", t.getName(), e);
-        }
-      });
+      setUncaughtExceptionHandler((t, e) -> log.error("Uncaught exception in thread {}: {}", t.getName(), e));
     }
 
     public void put(WebSocketImpl ws) throws InterruptedException {

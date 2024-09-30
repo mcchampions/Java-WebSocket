@@ -26,6 +26,8 @@
 package org.java_websocket.framing;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
+
 import org.java_websocket.enums.Opcode;
 import org.java_websocket.exceptions.InvalidDataException;
 import org.java_websocket.exceptions.InvalidFrameException;
@@ -228,7 +230,7 @@ public class CloseFrame extends ControlFrame {
     if (code == CloseFrame.NO_UTF8 && reason.isEmpty()) {
       throw new InvalidDataException(CloseFrame.NO_UTF8, "Received text is no valid utf8 string!");
     }
-    if (code == CloseFrame.NOCODE && 0 < reason.length()) {
+    if (code == CloseFrame.NOCODE && !reason.isEmpty()) {
       throw new InvalidDataException(PROTOCOL_ERROR,
           "A close frame must have a closecode if it has a reason");
     }
@@ -328,7 +330,7 @@ public class CloseFrame extends ControlFrame {
     if (code != that.code) {
       return false;
     }
-    return reason != null ? reason.equals(that.reason) : that.reason == null;
+    return Objects.equals(reason, that.reason);
   }
 
   @Override
