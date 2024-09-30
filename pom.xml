@@ -14,9 +14,6 @@
 
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <sonar.projectKey>org.java-websocket:Java-WebSocket</sonar.projectKey>
-        <sonar.organization>marci4-github</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencyManagement>
         <dependencies>
