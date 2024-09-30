@@ -26,7 +26,6 @@
 package org.java_websocket;
 
 import org.java_websocket.drafts.Draft;
-import org.java_websocket.exceptions.InvalidDataException;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.PingFrame;
 import org.java_websocket.framing.PongFrame;
@@ -41,72 +40,72 @@ import org.java_websocket.handshake.ServerHandshakeBuilder;
  **/
 public abstract class WebSocketAdapter implements WebSocketListener {
 
-  private PingFrame pingFrame;
+    private PingFrame pingFrame;
 
-  /**
-   * This default implementation does not do anything. Go ahead and overwrite it.
-   *
-   * @see org.java_websocket.WebSocketListener#onWebsocketHandshakeReceivedAsServer(WebSocket,
-   * Draft, ClientHandshake)
-   */
-  @Override
-  public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft,
-      ClientHandshake request) {
-    return new HandshakeImpl1Server();
-  }
-
-  @Override
-  public void onWebsocketHandshakeReceivedAsClient(WebSocket conn, ClientHandshake request,
-      ServerHandshake response) {
-    //To overwrite
-  }
-
-  /**
-   * This default implementation does not do anything which will cause the connections to always
-   * progress.
-   *
-   * @see org.java_websocket.WebSocketListener#onWebsocketHandshakeSentAsClient(WebSocket,
-   * ClientHandshake)
-   */
-  @Override
-  public void onWebsocketHandshakeSentAsClient(WebSocket conn, ClientHandshake request) {
-    //To overwrite
-  }
-
-  /**
-   * This default implementation will send a pong in response to the received ping. The pong frame
-   * will have the same payload as the ping frame.
-   *
-   * @see org.java_websocket.WebSocketListener#onWebsocketPing(WebSocket, Framedata)
-   */
-  @Override
-  public void onWebsocketPing(WebSocket conn, Framedata f) {
-    conn.sendFrame(new PongFrame((PingFrame) f));
-  }
-
-  /**
-   * This default implementation does not do anything. Go ahead and overwrite it.
-   *
-   * @see org.java_websocket.WebSocketListener#onWebsocketPong(WebSocket, Framedata)
-   */
-  @Override
-  public void onWebsocketPong(WebSocket conn, Framedata f) {
-    //To overwrite
-  }
-
-  /**
-   * Default implementation for onPreparePing, returns a (cached) PingFrame that has no application
-   * data.
-   *
-   * @param conn The <code>WebSocket</code> connection from which the ping frame will be sent.
-   * @return PingFrame to be sent.
-   * @see org.java_websocket.WebSocketListener#onPreparePing(WebSocket)
-   */
-  @Override
-  public PingFrame onPreparePing(WebSocket conn) {
-    if (pingFrame == null) {
-      pingFrame = new PingFrame();
+    /**
+     * This default implementation does not do anything. Go ahead and overwrite it.
+     *
+     * @see org.java_websocket.WebSocketListener#onWebsocketHandshakeReceivedAsServer(WebSocket,
+     * Draft, ClientHandshake)
+     */
+    @Override
+    public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft,
+                                                                       ClientHandshake request) {
+        return new HandshakeImpl1Server();
     }
-    return pingFrame;
-  }
+
+    @Override
+    public void onWebsocketHandshakeReceivedAsClient(WebSocket conn, ClientHandshake request,
+                                                     ServerHandshake response) {
+        //To overwrite
+    }
+
+    /**
+     * This default implementation does not do anything which will cause the connections to always
+     * progress.
+     *
+     * @see org.java_websocket.WebSocketListener#onWebsocketHandshakeSentAsClient(WebSocket,
+     * ClientHandshake)
+     */
+    @Override
+    public void onWebsocketHandshakeSentAsClient(WebSocket conn, ClientHandshake request) {
+        //To overwrite
+    }
+
+    /**
+     * This default implementation will send a pong in response to the received ping. The pong frame
+     * will have the same payload as the ping frame.
+     *
+     * @see org.java_websocket.WebSocketListener#onWebsocketPing(WebSocket, Framedata)
+     */
+    @Override
+    public void onWebsocketPing(WebSocket conn, Framedata f) {
+        conn.sendFrame(new PongFrame((PingFrame) f));
+    }
+
+    /**
+     * This default implementation does not do anything. Go ahead and overwrite it.
+     *
+     * @see org.java_websocket.WebSocketListener#onWebsocketPong(WebSocket, Framedata)
+     */
+    @Override
+    public void onWebsocketPong(WebSocket conn, Framedata f) {
+        //To overwrite
+    }
+
+    /**
+     * Default implementation for onPreparePing, returns a (cached) PingFrame that has no application
+     * data.
+     *
+     * @param conn The <code>WebSocket</code> connection from which the ping frame will be sent.
+     * @return PingFrame to be sent.
+     * @see org.java_websocket.WebSocketListener#onPreparePing(WebSocket)
+     */
+    @Override
+    public PingFrame onPreparePing(WebSocket conn) {
+        if (pingFrame == null) {
+            pingFrame = new PingFrame();
+        }
+        return pingFrame;
+    }
 }
